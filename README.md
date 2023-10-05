@@ -4,7 +4,7 @@
 
 ### Modified to be compatible with tf2_msgs/TFMessage
 
-I am using xsens mti 670 which /tf topic is tf2_msgs/TFMessage and his msg format is 
+I am using xsens mti 670 which /tf topic is tf2_msgs/TFMessage and msg format:
 ```
 $ rosmsg show tf2_msgs/TFMessage
 geometry_msgs/TransformStamped[] transforms
