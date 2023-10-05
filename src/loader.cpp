@@ -1,4 +1,5 @@
 #include <geometry_msgs/TransformStamped.h>
+#include <tf2_msgs/TFMessage.h>
 #include <rosbag/bag.h>
 #include <rosbag/view.h>
 
@@ -120,7 +121,8 @@ bool Loader::loadTformFromROSBag(const std::string& bag_path, Odom* odom) {
   }
 
   std::vector<std::string> types;
-  types.push_back(std::string("geometry_msgs/TransformStamped"));
+  // Modify the expected message type to tf2_msgs/TFMessage
+  types.push_back(std::string("tf2_msgs/TFMessage"));
   rosbag::View view(bag, rosbag::TypeQuery(types));
 
   size_t tform_num = 0;
@@ -128,20 +130,23 @@ bool Loader::loadTformFromROSBag(const std::string& bag_path, Odom* odom) {
     std::cout << " Loading transform: \e[1m" << tform_num++
               << "\e[0m from ros bag" << '\r' << std::flush;
 
-    geometry_msgs::TransformStamped transform_msg =
-        *(m.instantiate<geometry_msgs::TransformStamped>());
+    // Instantiate a tf2_msgs/TFMessage instead of geometry_msgs/TransformStamped
+    auto tf_message = m.instantiate<tf2_msgs::TFMessage>();
 
-    Timestamp stamp = transform_msg.header.stamp.sec * 1000000ll +
-                      transform_msg.header.stamp.nsec / 1000ll;
+    // Iterate through each TransformStamped message in the TFMessage
+    for (const auto& transform_msg : tf_message->transforms) {
+      Timestamp stamp = transform_msg.header.stamp.sec * 1000000ll +
+                        transform_msg.header.stamp.nsec / 1000ll;
 
-    Transform T(Transform::Translation(transform_msg.transform.translation.x,
-                                       transform_msg.transform.translation.y,
-                                       transform_msg.transform.translation.z),
-                Transform::Rotation(transform_msg.transform.rotation.w,
-                                    transform_msg.transform.rotation.x,
-                                    transform_msg.transform.rotation.y,
-                                    transform_msg.transform.rotation.z));
-    odom->addTransformData(stamp, T);
+      Transform T(Transform::Translation(transform_msg.transform.translation.x,
+                                         transform_msg.transform.translation.y,
+                                         transform_msg.transform.translation.z),
+                  Transform::Rotation(transform_msg.transform.rotation.w,
+                                      transform_msg.transform.rotation.x,
+                                      transform_msg.transform.rotation.y,
+                                      transform_msg.transform.rotation.z));
+      odom->addTransformData(stamp, T);
+    }
   }
 
   if (odom->empty()) {

@@ -2,6 +2,30 @@
 
 ## A simple method for finding the extrinsic calibration between a 3D lidar and a 6-dof pose sensor
 
+##Modified to be compatible with tf2_msgs/TFMessage
+
+I am using xsens mti 670 which /tf topic is tf2_msgs/TFMessage and his msg format is 
+```
+$ rosmsg show tf2_msgs/TFMessage
+geometry_msgs/TransformStamped[] transforms
+  std_msgs/Header header
+    uint32 seq
+    time stamp
+    string frame_id
+  string child_frame_id
+  geometry_msgs/Transform transform
+    geometry_msgs/Vector3 translation
+      float64 x
+      float64 y
+      float64 z
+    geometry_msgs/Quaternion rotation
+      float64 x
+      float64 y
+      float64 z
+      float64 w
+```
+
+
 **Note: Accurate results require highly non-planar motions, this makes the technique poorly suited for calibrating sensors mounted to cars.**
 
 The method makes use of the property that pointclouds from lidars appear more 'crisp' when the calibration is correct. It does this as follows:
