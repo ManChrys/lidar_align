@@ -2,7 +2,7 @@
 
 ## A simple method for finding the extrinsic calibration between a 3D lidar and a 6-dof pose sensor
 
-##Modified to be compatible with tf2_msgs/TFMessage
+###Modified to be compatible with tf2_msgs/TFMessage
 
 I am using xsens mti 670 which /tf topic is tf2_msgs/TFMessage and his msg format is 
 ```
